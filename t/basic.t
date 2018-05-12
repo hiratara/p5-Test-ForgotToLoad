@@ -1,8 +1,15 @@
 use strict;
-use Test::More;
-use Test::ForgotToLoad;
+use Test::More import => [qw(done_testing)];
+use Test::ForgotToLoad qw(
+    %WELLKNOWN_DEPENDENCIES
+    all_forgot_to_load_ok
+);
 
-# replace with the actual test
-ok 1;
+%WELLKNOWN_DEPENDENCIES = (
+    PPI => [
+        'PPI::Document'
+    ],
+);
+all_forgot_to_load_ok;
 
 done_testing;
