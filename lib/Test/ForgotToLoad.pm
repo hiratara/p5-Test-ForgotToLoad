@@ -5,7 +5,8 @@ use warnings;
 use Exporter qw(import);
 use File::Find ();
 use PPI;
-use Test::More import => [qw(subtest ok)];
+use Test::Builder ();
+use Test::More import => [qw(is ok)];
 
 our $VERSION = '0.01';
 our @EXPORT_OK = qw(
@@ -131,31 +132,32 @@ sub forgot_to_load_ok ($;$) {
     my ($file, $note) = @_;
     $note //= "$file";
 
-    subtest $note => sub {
-        my $doc = PPI::Document->new($file);
+    my $doc = PPI::Document->new($file);
 
-        my %loaded_classes = map { $_ => 1 } _get_defined_classes $doc,
-                                             _get_used_classes $doc;
-        my @callee_classes = _get_callee_classes $doc;
+    my %loaded_classes = map { $_ => 1 } _get_defined_classes $doc,
+                                         _get_used_classes $doc;
+    my @callee_classes = _get_callee_classes $doc;
 
-        ok $loaded_classes{$_}, "$_ sould be loaded"
-            for sort @callee_classes;
-    };
+    my @classes_forgotten_to_load = grep { ! $loaded_classes{$_} }
+                                         @callee_classes;
+
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+    is scalar @classes_forgotten_to_load, 0,
+       "${note}: ${\ join ',', @classes_forgotten_to_load} sould be loaded"
 }
 
 sub all_forgot_to_load_ok (;$) {
     my $note = shift;
     $note //= __PACKAGE__;
 
-    subtest $note => sub {
-        my @files;
-        File::Find::find sub {
-            -f && ! /^\./ && /\.pm$/ or return;
-            push @files, $File::Find::name;
-        } => 'lib/';
+    my @files;
+    File::Find::find sub {
+        -f && ! /^\./ && /\.pm$/ or return;
+        push @files, $File::Find::name;
+    } => 'lib/';
 
-        forgot_to_load_ok $_ for @files;
-    };
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+    forgot_to_load_ok $_ for @files;
 }
 
 1;
