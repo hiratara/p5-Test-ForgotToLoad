@@ -142,10 +142,11 @@ sub forgot_to_load_ok ($;$) {
                                          @callee_classes;
 
     local $Test::Builder::Level = $Test::Builder::Level + 1;
-    ok ! @classes_forgotten_to_load, "class used in $file" or
+    ok(! @classes_forgotten_to_load, "class used in $file") or do {
         diag <<DIAGNOSTIC for @classes_forgotten_to_load;
     $_ should be loaded
 DIAGNOSTIC
+    };
 }
 
 sub all_forgot_to_load_ok (;$) {
