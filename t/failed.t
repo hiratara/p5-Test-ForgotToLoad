@@ -14,6 +14,6 @@ check_test(
         name => q(class used in t/Invalid.pm),
         diag => "    Other::Class should be loaded",
     },
-), 'check Invalid.pm';
+, 'check Invalid.pm');
 
 done_testing;
