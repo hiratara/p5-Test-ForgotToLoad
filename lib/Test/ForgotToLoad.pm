@@ -169,15 +169,50 @@ __END__
 
 =head1 NAME
 
-Test::ForgotToLoad - Blah blah blah
+Test::ForgotToLoad - Make sure to load all classes
 
 =head1 SYNOPSIS
 
-  use Test::ForgotToLoad;
+  use Test::ForgotToLoad qw(forgot_to_load_ok);
+  use Test::More import => [qw(all_forgot_to_load_ok)];
+
+  all_forgot_to_load_ok;
+  done_testing;
 
 =head1 DESCRIPTION
 
-Test::ForgotToLoad is
+Test::ForgotToLoad finds classes that forget to use.
+
+=head1 FUNCTIONS
+
+=head2 C<forgot_to_load_ok($path_to_your_class [, $note])>
+
+Finds classes that forget to use in the C<$path_to_your_class> file.
+If all the classes are correctly loaded, the test will succeed.
+
+C<forgot_to_load_ok> uses PPI to find classes used in the file.
+It regards the description of form C<< CLASS->method >> as a class.
+
+=head2 C<all_forgot_to_load_ok([$note])>
+
+Check all files in C<lib/> directory using C<forgot_to_load_ok>.
+
+=head1 VARIABLES
+
+=head2 C<%WELLKNOWN_DEPENDENCIES>
+
+Define classes automatically used when you use another one.
+
+  use Test::ForgotToLoad qw(%WELLKNOWN_DEPENDENCIES);
+
+  %WELLKNOWN_DEPENDENCIES = (
+      PPI => [
+          'PPI::Document',
+          'PPI::Statement',
+          'PPI::Structure',
+          .. snip ..
+      ],
+  );
 
 =head1 AUTHOR
 
