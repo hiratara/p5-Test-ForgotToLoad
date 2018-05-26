@@ -11,8 +11,8 @@ check_test(
         forgot_to_load_ok 't/Invalid.pm';
     }, {
         ok => 0,
-        name => q(t/Invalid.pm: Other::Class sould be loaded),
-        diag => "         got: '1'\n    expected: '0'",
+        name => q(class used in t/Invalid.pm),
+        diag => "    Other::Class should be loaded",
     },
 ), 'check Invalid.pm';
 

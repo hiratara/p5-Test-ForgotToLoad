@@ -6,7 +6,7 @@ use Exporter qw(import);
 use File::Find ();
 use PPI;
 use Test::Builder ();
-use Test::More import => [qw(is ok)];
+use Test::More import => [qw(diag is ok)];
 
 our $VERSION = '0.01';
 our @EXPORT_OK = qw(
@@ -142,8 +142,10 @@ sub forgot_to_load_ok ($;$) {
                                          @callee_classes;
 
     local $Test::Builder::Level = $Test::Builder::Level + 1;
-    is scalar @classes_forgotten_to_load, 0,
-       "${note}: ${\ join ',', @classes_forgotten_to_load} sould be loaded"
+    ok ! @classes_forgotten_to_load, "class used in $file" or
+        diag <<DIAGNOSTIC for @classes_forgotten_to_load;
+    $_ should be loaded
+DIAGNOSTIC
 }
 
 sub all_forgot_to_load_ok (;$) {
